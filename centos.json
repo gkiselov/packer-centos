@@ -1,0 +1,92 @@
+{
+  "builders": [
+    {
+      "name": "7",
+      "vm_name": "centos7",
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "iso_checksum_type": "md5",
+      "iso_checksum": "96de4f38a2f07da51831153549c8bd0c",
+      "iso_url": "http://centos.openitc.uk/7/isos/x86_64/CentOS-7.0-1406-x86_64-NetInstall.iso",
+      "type": "virtualbox-iso",
+      "ssh_password": "vagrant",
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "50000s",
+      "headless": "false",
+      "disk_size": 10000,
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "http_directory": ".",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/http/ks.cfg ",
+        "method=http://centos.openitc.uk/7/os/x86_64<enter>"
+      ],
+      "shutdown_command": "echo 'vagrant' | sudo -S /sbin/halt -h -p"
+    },
+    {
+      "name": "6",
+      "vm_name": "centos6",
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "iso_checksum_type": "md5",
+      "iso_checksum": "2342bc5ea72fc028972aa0f21cee28b4",
+      "iso_url": "http://centos.openitc.uk/6/isos/x86_64/CentOS-6.6-x86_64-netinstall.iso",
+      "type": "virtualbox-iso",
+      "ssh_password": "vagrant",
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "50000s",
+      "headless": "false",
+      "disk_size": 10000,
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "http_directory": ".",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/http/ks.cfg ",
+        "method=http://centos.openitc.uk/6/os/x86_64<enter>"
+      ],
+      "shutdown_command": "echo 'vagrant' | sudo -S /sbin/halt -h -p"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/vagrant.sh",
+        "scripts/virtualbox.sh",
+        "scripts/cleanup.sh"
+      ],
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "compression_level": 9,
+      "output": "centos-{{.BuildName}}.box"
+    }
+  ]
+}
